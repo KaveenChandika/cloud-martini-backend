@@ -14,7 +14,7 @@ jobs:
       HASH: ${{ github.sha }}
       BRANCH: main
       SERVICE_NAME: cloud-martini-backend
-      REGISTRY_OWNER: kaveenchandika
+      REGISTRY_OWNER: chamodshehanka
 
     steps:
       - name: Checkout
@@ -26,7 +26,7 @@ jobs:
 
       # Push docker image to GHCR
       - name: Log in to GitHub Container Registry
-        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Push Image to GHCR
         run: docker push ghcr.io/${{ env.REGISTRY_OWNER }}/${{ env.SERVICE_NAME }}:${{ env.HASH }}
