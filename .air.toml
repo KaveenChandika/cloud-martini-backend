@@ -1,0 +1,8 @@
+[build]
+cmd = "go build -o ./tmp/main ./cmd"
+bin = "./tmp/main"
+full_bin = "./tmp/main"
+include_ext = ["go", "tmpl", "html"]
+exclude_dir = ["vendor", "tmp"]
+exclude_file = []
+delay = 1000
