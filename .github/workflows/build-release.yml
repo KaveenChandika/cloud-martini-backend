@@ -1,0 +1,36 @@
+name: GitHub Registry Build and Push
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build image
+    runs-on: ubuntu-latest
+
+    env:
+      HASH: ${{ github.sha }}
+      BRANCH: main
+      SERVICE_NAME: cloud-martini-backend
+      REGISTRY_OWNER: KaveenChandika
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Build docker image
+      - name: Image Build
+        run: docker build -t ghcr.io/${{ env.REGISTRY_OWNER }}/${{ env.SERVICE_NAME }}:${{ env.HASH }} .
+
+      - name: Image Push
+        uses: docker/build-push-action@v6
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          repository: ${{ env.REGISTRY_OWNER }}/${{ env.SERVICE_NAME }}
+          tags: |
+            latest
+            ${{ env.HASH }}
