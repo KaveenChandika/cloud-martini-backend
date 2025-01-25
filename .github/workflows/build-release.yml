@@ -14,7 +14,7 @@ jobs:
       HASH: ${{ github.sha }}
       BRANCH: main
       SERVICE_NAME: cloud-martini-backend
-      REGISTRY_OWNER: KaveenChandika
+      REGISTRY_OWNER: kaveenchandika
 
     steps:
       - name: Checkout
