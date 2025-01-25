@@ -1,7 +1,9 @@
 package queries
 
 import (
+	"cloud-martini-backend/dto"
 	"context"
+	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -30,4 +32,15 @@ func GetUsers(collection *mongo.Collection) ([]map[string]interface{}, error) {
 	}
 
 	return users, nil
+}
+
+func InsertUser(collection *mongo.Collection, users dto.Users) (*mongo.InsertOneResult, error) {
+	insertResult, err := collection.InsertOne(context.TODO(), users)
+	if err != nil {
+		fmt.Println("Error Inserting Values")
+		return nil, err
+	}
+
+	return insertResult, nil
+
 }

@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	fmt.Println("Started HAckthon")
+	fmt.Println("Started Cloud Martini Code")
 	err := godotenv.Load()
 	if err != nil {
 		panic(err)

@@ -11,6 +11,7 @@ func SetupRouter() *gin.Engine {
 
 	router.GET("/healthCheck", handler.HealthCheck)
 	router.GET("/users", handler.GetUsers)
+	router.POST("/users", handler.AddUsers)
 	router.POST("/order")
 	router.GET("/orders")
 
