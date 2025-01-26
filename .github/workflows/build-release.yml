@@ -57,13 +57,20 @@ jobs:
         uses: 'google-github-actions/auth@v2'
         with:
           credentials_json: '${{ secrets.GKE_SA_KEY }}'
-      
+
+      - name: Connect to GKE
+        uses: 'Swibi/connect-to-gke'
+        with:
+          GCP_SA_KEY: ${{ secrets.GKE_SA_KEY }}
+          GCP_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
+          GKE_CLUSTER: ${{ env.GKE_CLUSTER }}
+          GKE_ZONE: ${{ env.GKE_ZONE }}
       # Get the GKE credentials so we can deploy to the cluster
       - uses: google-github-actions/get-gke-credentials@v2
         with:
           cluster_name: ${{ env.GKE_CLUSTER }}
           location: ${{ env.GKE_ZONE }}
-          project_id: ${{ env.PROJECT_ID }}
+          project_id: ${{ secrets.GOOGLE_PROJECT_ID }}
       
       - name: Test Cluster Connectivity
         run: kubectl cluster-info
