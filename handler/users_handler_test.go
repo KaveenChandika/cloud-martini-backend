@@ -65,30 +65,24 @@ func TestGetUsers(t *testing.T) {
 }
 
 func TestAddUsers(t *testing.T) {
-	// Mock InsertUser function
 	mockInsertFunc := func(collection *mongo.Collection, users dto.Users) (*mongo.InsertOneResult, error) {
 		return &mongo.InsertOneResult{InsertedID: "mock-id"}, nil
 	}
 
-	// Set up Gin and handler
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
 	router.POST("/users", func(ctx *gin.Context) {
 		handler.AddUsers(ctx, mockInsertFunc)
 	})
 
-	// Create test data
 	payload := `{"Id":"123","Designation":"Software Engineer","Email":"test@gmail.com","Name":"Test User","Projects":["Project1"]}`
 
-	// Create a test request
 	req, _ := http.NewRequest(http.MethodPost, "/users", strings.NewReader(payload))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
-	// Perform the test
 	router.ServeHTTP(rec, req)
 
-	// Assertions
 	assert.Equal(t, http.StatusOK, rec.Code)
 	expectedBody := `{"message":"Data Added Successfully","status":true}`
 	var expected, actual map[string]interface{}

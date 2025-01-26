@@ -6,7 +6,9 @@ import (
 	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func GetUsers(collection *mongo.Collection) ([]map[string]interface{}, error) {
@@ -17,7 +19,7 @@ func GetUsers(collection *mongo.Collection) ([]map[string]interface{}, error) {
 	defer cursor.Close(context.TODO())
 
 	var users []map[string]interface{}
-	// Iterate through the cursor and decode each document
+
 	for cursor.Next(context.TODO()) {
 		var user map[string]interface{}
 		if err := cursor.Decode(&user); err != nil {
@@ -26,7 +28,6 @@ func GetUsers(collection *mongo.Collection) ([]map[string]interface{}, error) {
 		users = append(users, user)
 	}
 
-	// Check if the cursor encountered any errors
 	if err := cursor.Err(); err != nil {
 		return nil, err
 	}
@@ -43,4 +44,36 @@ func InsertUser(collection *mongo.Collection, users dto.Users) (*mongo.InsertOne
 
 	return insertResult, nil
 
+}
+
+func DeleteUser(collection *mongo.Collection, objectId primitive.ObjectID) (*mongo.DeleteResult, error) {
+	filter := bson.M{"_id": objectId}
+	deleteResult, err := collection.DeleteOne(context.TODO(), filter, options.Delete())
+	if err != nil {
+		fmt.Printf("Error deleting user: %v\n", err)
+		return nil, err
+	}
+	return deleteResult, nil
+}
+
+func UpdateUsers(collection *mongo.Collection, objectId primitive.ObjectID, updateUsers dto.Users) (*mongo.UpdateResult, error) {
+	filter := bson.M{"_id": objectId}
+	// Define the update operation
+	update := bson.M{
+		"$set": bson.M{
+			"designation": updateUsers.Designation,
+			"email":       updateUsers.Email,
+			"name":        updateUsers.Name,
+			"projects":    updateUsers.Projects,
+		},
+	}
+
+	// Perform the update operation
+	updateResult, err := collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		fmt.Printf("Error updating user: %v\n", err)
+		return nil, err
+	}
+
+	return updateResult, nil
 }
