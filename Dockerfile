@@ -14,16 +14,22 @@ RUN go mod download
 COPY . .
 
 # Build the Go application
-RUN go build -o cloud-martini-backend ./cmd
+RUN CGO_ENABLED=0 GOOS=linux go build -o cloud-martini-backend ./cmd
 
 # Use a minimal base image for the final stage
 FROM alpine:latest
+
+# Install necessary dependencies
+RUN apk add --no-cache ca-certificates
 
 # Set the working directory inside the container
 WORKDIR /root/
 
 # Copy the built Go application from the builder stage
 COPY --from=builder /app/cloud-martini-backend .
+
+# Ensure the binary has execute permissions
+RUN chmod +x cloud-martini-backend
 
 # Expose the port the application runs on
 EXPOSE 8080
