@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -43,22 +42,27 @@ func DisconnectMongo() {
 	}
 }
 
-func GetCollection(collectionName string) (*mongo.Collection, error) {
-	var MONGO_URI string = os.Getenv("MONGO_URI")
-	var MONGO_DB string = os.Getenv("MONGO_DB")
+// func GetCollection(collectionName string) (*mongo.Collection, error) {
+// 	MONGO_URI := os.Getenv("MONGO_URI")
+// 	if MONGO_URI == "" {
+// 		MONGO_URI := "mongodb+srv://Kaveen:qX10lodLpHHEDFLg@cluster1.i6vai.mongodb.net/cloud-martini"
+// 	}
+// 	MONGO_DB := os.Getenv("MONGO_DB")
+// 	if MONGO_DB == "" {
+// 		MONGO_DB := "cloud-martini"
+// 	}
+// 	fmt.Println(MONGO_DB, collectionName)
 
-	fmt.Println(MONGO_DB, collectionName)
+// 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(MONGO_URI))
+// 	if err != nil {
+// 		fmt.Printf("Error connecting to MongoDB: %v", err)
+// 	}
+// 	defer func() {
+// 		if err := client.Disconnect(context.TODO()); err != nil {
+// 			fmt.Printf("Error disconnecting MongoDB: %v", err)
+// 		}
+// 	}()
+// 	collection := client.Database(MONGO_DB).Collection(collectionName)
+// 	return collection, nil
 
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(MONGO_URI))
-	if err != nil {
-		fmt.Printf("Error connecting to MongoDB: %v", err)
-	}
-	defer func() {
-		if err := client.Disconnect(context.TODO()); err != nil {
-			fmt.Printf("Error disconnecting MongoDB: %v", err)
-		}
-	}()
-	collection := client.Database(MONGO_DB).Collection(collectionName)
-	return collection, nil
-
-}
+// }
