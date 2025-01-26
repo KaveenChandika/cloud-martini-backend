@@ -55,6 +55,11 @@ jobs:
           chmod 600 $HOME/.kube/config
           ls -la $HOME/.kube/
           cat $HOME/.kube/config
+      
+      - name: Test Cluster Connectivity
+        run: kubectl cluster-info
+        env:
+          KUBECONFIG: $HOME/.kube/config
 
       - name: Deploy to Kubernetes
         run: |
