@@ -13,7 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func GetUsers(ctx *gin.Context, getUserFunc func(collection *mongo.Collection) ([]dto.Users, error)) {
+func GetUsers(ctx *gin.Context, getUserFunc func(collection *mongo.Collection) ([]map[string]interface{}, error)) {
 
 	collection, err := db.GetCollection("users")
 	if err != nil {
@@ -60,7 +60,7 @@ func AddUsers(ctx *gin.Context, insertUserFunc func(collection *mongo.Collection
 	})
 }
 
-func DeleteUsers(ctx *gin.Context, deleteUserFunc func(collection *mongo.Collection, objectID primitive.ObjectID) (*mongo.InsertOneResult, error)) {
+func DeleteUsers(ctx *gin.Context, deleteUserFunc func(collection *mongo.Collection, objectID primitive.ObjectID) (*mongo.DeleteResult, error)) {
 	collection, err := db.GetCollection("users")
 	if err != nil {
 		panic(err)
@@ -86,7 +86,7 @@ func DeleteUsers(ctx *gin.Context, deleteUserFunc func(collection *mongo.Collect
 	}
 }
 
-func UpdateUsers(ctx *gin.Context, updateUserFunc func(collection *mongo.Collection, objectID primitive.ObjectID) (*mongo.InsertOneResult, error)) {
+func UpdateUsers(ctx *gin.Context, updateUserFunc func(collection *mongo.Collection, objectID primitive.ObjectID, updateUsers dto.Users) (*mongo.UpdateResult, error)) {
 	collection, err := db.GetCollection("users")
 	if err != nil {
 		panic(err)
