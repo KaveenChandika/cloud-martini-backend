@@ -30,4 +30,28 @@ jobs:
 
       - name: Push Image to GHCR
         run: docker push ghcr.io/${{ env.REGISTRY_OWNER }}/${{ env.SERVICE_NAME }}:${{ env.HASH }}
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Kubernetes
+        uses: azure/setup-kubectl@v1
+        with:
+          version: v1.21.0
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: v3.5.4
+
+      - name: Deploy to Kubernetes
+        run: |
+          helm upgrade --install cloud-martini-backend ./k8s \
+            --set image.repository=ghcr.io/chamodshehanka/cloud-martini-backend \
+            --set image.tag=latest
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
