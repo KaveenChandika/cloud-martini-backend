@@ -35,7 +35,7 @@ jobs:
     # needs: build
 
     env:
-      GKE_CLUSTER: gke_t-pointer-442615-u8_us-central1_circles-cluster
+      GKE_CLUSTER: circles-cluster
       GKE_ZONE: us-central1
 
     steps:
@@ -57,22 +57,20 @@ jobs:
         uses: 'google-github-actions/auth@v2'
         with:
           credentials_json: '${{ secrets.GKE_SA_KEY }}'
-      
+
       # Get the GKE credentials so we can deploy to the cluster
       - uses: google-github-actions/get-gke-credentials@v2
         with:
           cluster_name: ${{ env.GKE_CLUSTER }}
           location: ${{ env.GKE_ZONE }}
-          project_id: ${{ env.PROJECT_ID }}
+          project_id: ${{ secrets.GOOGLE_PROJECT_ID }}
       
       - name: Test Cluster Connectivity
         run: kubectl cluster-info
-        # env:
-        #   KUBECONFIG: $HOME/.kube/config
 
       - name: Deploy to Kubernetes
         run: |
-          helm upgrade --install cloud-martini-backend ./k8s \
+          helm upgrade --install cloud-martini-backend ./helm \
             --set image.repository=ghcr.io/chamodshehanka/cloud-martini-backend \
             --set image.tag=latest
         # env:
