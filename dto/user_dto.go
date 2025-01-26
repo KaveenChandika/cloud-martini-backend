@@ -1,7 +1,9 @@
 package dto
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 type Users struct {
-	Id          string
+	ID          primitive.ObjectID `bson:"_id,omitempty"`
 	Name        string
 	Designation string
 	Email       string

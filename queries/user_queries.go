@@ -11,17 +11,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func GetUsers(collection *mongo.Collection) ([]map[string]interface{}, error) {
+func GetUsers(collection *mongo.Collection) ([]dto.Users, error) {
 	cursor, err := collection.Find(context.TODO(), bson.M{})
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(context.TODO())
 
-	var users []map[string]interface{}
+	var users []dto.Users
 
 	for cursor.Next(context.TODO()) {
-		var user map[string]interface{}
+		var user dto.Users
 		if err := cursor.Decode(&user); err != nil {
 			return nil, err
 		}

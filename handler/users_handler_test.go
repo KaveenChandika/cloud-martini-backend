@@ -6,6 +6,7 @@ import (
 	"cloud-martini-backend/handler"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -20,22 +21,14 @@ import (
 
 type MockUserQuery struct{}
 
-func (m MockUserQuery) GetUsers(collection *mongo.Collection) ([]dto.Users, error) {
-	return []dto.Users{
-		{
-			Id:          "6794fbd64abd79f9d9ca63e1",
-			Designation: "Senior Software Engineer",
-			Email:       "ahadhi@example.com",
-			Name:        "Abdul Hadhi",
-			Projects:    []string{"SG"},
-		},
-	}, nil
-}
-
 func TestGetUsers(t *testing.T) {
+	objectID, err := primitive.ObjectIDFromHex("6794fbd64abd79f9d9ca63e1")
+	if err != nil {
+		log.Fatalf("Invalid ObjectID: %v", err)
+	}
 	mockUsers := []dto.Users{
 		{
-			Id:          "6794fbd64abd79f9d9ca63e1",
+			ID:          objectID,
 			Designation: "Senior Software Engineer",
 			Email:       "ahadhi@example.com",
 			Name:        "Abdul Hadhi",
@@ -99,11 +92,11 @@ func TestAddUsers(t *testing.T) {
 }
 
 func TestDeleteUser(t *testing.T) {
-	mockDeleteFunc := func(collection *mongo.Collection, objectID primitive.ObjectID) (*mongo.InsertOneResult, error) {
+	mockDeleteFunc := func(collection *mongo.Collection, objectID primitive.ObjectID) (*mongo.DeleteResult, error) {
 		if objectID.Hex() == "6795e8a095678ebea11b8174" {
-			return &mongo.InsertOneResult{InsertedID: "mock-id"}, nil
+			return &mongo.DeleteResult{DeletedCount: 1}, nil
 		}
-		return nil, nil
+		return &mongo.DeleteResult{DeletedCount: 0}, nil
 	}
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
@@ -134,16 +127,14 @@ func TestDeleteUser(t *testing.T) {
 		fmt.Println(expectedBody)
 	})
 }
-func TestUpdateUsers(t *testing.T) {
-	mockUpdateFunc := func(collection *mongo.Collection, objectID primitive.ObjectID) (*mongo.InsertOneResult, error) {
-		// Simulate a successful update
-		if objectID.Hex() == "6795b0d378ed545e7dde0c16" {
-			return &mongo.InsertOneResult{InsertedID: objectID}, nil
-		}
-		// Simulate case where user is not found
-		return nil, nil
-	}
 
+func TestUpdateUsers(t *testing.T) {
+	mockUpdateFunc := func(collection *mongo.Collection, objectID primitive.ObjectID, updateUsers dto.Users) (*mongo.UpdateResult, error) {
+		if objectID.Hex() == "6795b0d378ed545e7dde0c16" {
+			return &mongo.UpdateResult{MatchedCount: 1, ModifiedCount: 1}, nil
+		}
+		return &mongo.UpdateResult{MatchedCount: 0, ModifiedCount: 0}, nil
+	}
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
 
