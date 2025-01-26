@@ -47,6 +47,12 @@ jobs:
         uses: azure/setup-helm@v1
         with:
           version: v3.5.4
+      
+      - name: Configure kubeconfig
+        run: | 
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+          ls -la $HOME/.kube/
+          cat $HOME/.kube/config
 
       - name: Deploy to Kubernetes
         run: |
@@ -54,4 +60,4 @@ jobs:
             --set image.repository=ghcr.io/chamodshehanka/cloud-martini-backend \
             --set image.tag=latest
         env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+          KUBECONFIG: $HOME/.kube/config
