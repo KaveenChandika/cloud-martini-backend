@@ -77,10 +77,18 @@ func GetUsers(ctx *gin.Context) {
 	})
 }
 
-func AddUsers(ctx *gin.Context) {
+func AddUsers(ctx *gin.Context, insertUserFunc func(collection *mongo.Collection, users dto.Users) (*mongo.InsertOneResult, error)) {
 	var MONGO_URI string = os.Getenv("MONGO_URI")
+	if MONGO_URI == "" {
+		MONGO_URI = "mongodb+srv://Kaveen:qX10lodLpHHEDFLg@cluster1.i6vai.mongodb.net/cloud-martini"
+	}
 	var MONGO_DB string = os.Getenv("MONGO_DB")
+	if MONGO_DB == "" {
+		MONGO_DB = "cloud-martini"
+	}
 	var COLLECTION string = "users"
+
+	fmt.Println("MONGO DB =", MONGO_DB)
 	fmt.Println(MONGO_DB, COLLECTION)
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(MONGO_URI))
 	if err != nil {
