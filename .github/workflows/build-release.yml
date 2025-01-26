@@ -6,28 +6,74 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build image
+  # build:
+  #   name: Build image
+  #   runs-on: ubuntu-latest
+
+  #   env:
+  #     HASH: ${{ github.sha }}
+  #     BRANCH: main
+  #     SERVICE_NAME: cloud-martini-backend
+  #     REGISTRY_OWNER: chamodshehanka
+
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+
+  #     # Build docker image
+  #     - name: Image Build
+  #       run: docker build -t ghcr.io/${{ env.REGISTRY_OWNER }}/${{ env.SERVICE_NAME }}:${{ env.HASH }} .
+
+  #     # Push docker image to GHCR
+  #     - name: Log in to GitHub Container Registry
+  #       run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+  #     - name: Push Image to GHCR
+  #       run: docker push ghcr.io/${{ env.REGISTRY_OWNER }}/${{ env.SERVICE_NAME }}:${{ env.HASH }}
+  deploy:
     runs-on: ubuntu-latest
+    # needs: build
 
     env:
-      HASH: ${{ github.sha }}
-      BRANCH: main
-      SERVICE_NAME: cloud-martini-backend
-      REGISTRY_OWNER: chamodshehanka
+      GKE_CLUSTER: gke_t-pointer-442615-u8_us-central1_circles-cluster
+      GKE_ZONE: us-central1
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      # Build docker image
-      - name: Image Build
-        run: docker build -t ghcr.io/${{ env.REGISTRY_OWNER }}/${{ env.SERVICE_NAME }}:${{ env.HASH }} .
+      - name: Set up Kubernetes
+        uses: azure/setup-kubectl@v1
+        with:
+          version: v1.21.0
 
-      # Push docker image to GHCR
-      - name: Log in to GitHub Container Registry
-        run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Set up Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: v3.5.4
+      
+      # Setup gcloud CLI
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GKE_SA_KEY }}'
+      
+      # Get the GKE credentials so we can deploy to the cluster
+      - uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_ZONE }}
+          project_id: ${{ env.PROJECT_ID }}
+      
+      - name: Test Cluster Connectivity
+        run: kubectl cluster-info
+        # env:
+        #   KUBECONFIG: $HOME/.kube/config
 
-      - name: Push Image to GHCR
-        run: docker push ghcr.io/${{ env.REGISTRY_OWNER }}/${{ env.SERVICE_NAME }}:${{ env.HASH }}
-
+      - name: Deploy to Kubernetes
+        run: |
+          helm upgrade --install cloud-martini-backend ./k8s \
+            --set image.repository=ghcr.io/chamodshehanka/cloud-martini-backend \
+            --set image.tag=latest
+        # env:
+        #   KUBECONFIG: $HOME/.kube/config
