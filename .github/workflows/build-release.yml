@@ -35,7 +35,7 @@ jobs:
     # needs: build
 
     env:
-      GKE_CLUSTER: gke_t-pointer-442615-u8_us-central1_circles-cluster
+      GKE_CLUSTER: circles-cluster
       GKE_ZONE: us-central1
 
     steps:
