@@ -58,7 +58,7 @@ func GetCollection(collectionName string) (*mongo.Collection, error) {
 			fmt.Printf("Error disconnecting MongoDB: %v", err)
 		}
 	}()
-
-	return client.Database(MONGO_DB).Collection(collectionName), err
+	collection := client.Database(MONGO_DB).Collection(collectionName)
+	return collection, nil
 
 }
