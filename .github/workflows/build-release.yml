@@ -64,7 +64,7 @@ jobs:
           GCP_SA_KEY: ${{ secrets.GKE_SA_KEY }}
           GCP_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
           GKE_CLUSTER: ${{ env.GKE_CLUSTER }}
-          GKE_ZONE: ${{ env.GKE_ZONE }}
+          GKE_LOCATION: ${{ env.GKE_ZONE }}
       # Get the GKE credentials so we can deploy to the cluster
       - uses: google-github-actions/get-gke-credentials@v2
         with:
