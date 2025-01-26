@@ -7,9 +7,9 @@ spec:
   selector:
     app: {{ .Chart.Name }}
   ports:
-    - port: 80
-      targetPort: 8080
-  type: LoadBalancer
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+  type: {{ .Values.service.type }}
 ---
 # Preview Service
 apiVersion: v1
@@ -20,6 +20,6 @@ spec:
   selector:
     app: {{ .Chart.Name }}
   ports:
-    - port: 80
-      targetPort: 8080
-  type: LoadBalancer
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+  type: {{ .Values.service.type }}
