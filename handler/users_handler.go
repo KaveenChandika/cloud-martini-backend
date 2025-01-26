@@ -15,27 +15,27 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func GetCollection(collectionName string) (*mongo.Collection, error) {
-	var MONGO_URI string = os.Getenv("MONGO_URI")
-	var MONGO_DB string = os.Getenv("MONGO_DB")
+// func GetCollection(collectionName string) (*mongo.Collection, error) {
+// 	var MONGO_URI string = os.Getenv("MONGO_URI")
+// 	var MONGO_DB string = os.Getenv("MONGO_DB")
 
-	fmt.Println(MONGO_DB, collectionName)
+// 	fmt.Println(MONGO_DB, collectionName)
 
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(MONGO_URI))
-	if err != nil {
-		fmt.Printf("Error connecting to MongoDB: %v", err)
-	}
-	defer func() {
-		if err := client.Disconnect(context.TODO()); err != nil {
-			fmt.Printf("Error disconnecting MongoDB: %v", err)
-		}
-	}()
+// 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(MONGO_URI))
+// 	if err != nil {
+// 		fmt.Printf("Error connecting to MongoDB: %v", err)
+// 	}
+// 	defer func() {
+// 		if err := client.Disconnect(context.TODO()); err != nil {
+// 			fmt.Printf("Error disconnecting MongoDB: %v", err)
+// 		}
+// 	}()
 
-	return client.Database(MONGO_DB).Collection(collectionName), err
+// 	return client.Database(MONGO_DB).Collection(collectionName), err
 
-}
+// }
 
-func GetUsers(ctx *gin.Context) {
+func GetUsers(ctx *gin.Context, getUserFunc func(collection *mongo.Collection) ([]dto.Users, error)) {
 
 	// collection, err := GetCollection("users")
 	// if err != nil {
@@ -44,7 +44,13 @@ func GetUsers(ctx *gin.Context) {
 
 	// TODO: need to refectoring this code
 	var MONGO_URI string = os.Getenv("MONGO_URI")
+	if MONGO_URI == "" {
+		MONGO_URI = "mongodb+srv://Kaveen:qX10lodLpHHEDFLg@cluster1.i6vai.mongodb.net/cloud-martini"
+	}
 	var MONGO_DB string = os.Getenv("MONGO_DB")
+	if MONGO_DB == "" {
+		MONGO_DB = "cloud-martini"
+	}
 	var COLLECTION string = "users"
 
 	fmt.Println(MONGO_DB, COLLECTION)
@@ -120,7 +126,7 @@ func AddUsers(ctx *gin.Context, insertUserFunc func(collection *mongo.Collection
 	})
 }
 
-func DeleteUsers(ctx *gin.Context) {
+func DeleteUsers(ctx *gin.Context, deleteUserFunc func(collection *mongo.Collection, objectID primitive.ObjectID) (*mongo.InsertOneResult, error)) {
 	var MONGO_URI string = os.Getenv("MONGO_URI")
 	if MONGO_URI == "" {
 		MONGO_URI = "mongodb+srv://Kaveen:qX10lodLpHHEDFLg@cluster1.i6vai.mongodb.net/cloud-martini"
@@ -164,7 +170,7 @@ func DeleteUsers(ctx *gin.Context) {
 	}
 }
 
-func UpdateUsers(ctx *gin.Context) {
+func UpdateUsers(ctx *gin.Context, updateUserFunc func(collection *mongo.Collection, objectID primitive.ObjectID) (*mongo.InsertOneResult, error)) {
 	var MONGO_URI string = os.Getenv("MONGO_URI")
 	if MONGO_URI == "" {
 		MONGO_URI = "mongodb+srv://Kaveen:qX10lodLpHHEDFLg@cluster1.i6vai.mongodb.net/cloud-martini"
