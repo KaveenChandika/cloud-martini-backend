@@ -1,5 +1,5 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
   labels:
     app: {{ .Chart.Name }}
@@ -9,7 +9,11 @@ spec:
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
-  strategy: {}
+  strategy: 
+    blueGreen:
+      activeService: {{ .Chart.Name }}-active
+      previewService: {{ .Chart.Name }}-preview
+      autoPromotionEnabled: false # Set to true if you want automatic traffic switching
   template:
     metadata:
       labels:
