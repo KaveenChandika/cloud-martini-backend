@@ -12,7 +12,7 @@ import (
 
 var MongoClient *mongo.Client
 
-func ConnectMongo(uri string) {
+func ConnectMongo(uri string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -20,16 +20,18 @@ func ConnectMongo(uri string) {
 
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
-		log.Fatalf("Error connecting to MongoDB: %v", err)
+		return fmt.Errorf("error connecting to MongoDB: %w", err)
 	}
 
+	// Test the connection
 	err = client.Ping(ctx, nil)
 	if err != nil {
-		log.Fatalf("MongoDB ping failed: %v", err)
+		return fmt.Errorf("MongoDB ping failed: %w", err)
 	}
 
 	MongoClient = client
 	fmt.Println("Connected to MongoDB!")
+	return nil
 }
 
 func DisconnectMongo() {
@@ -42,27 +44,13 @@ func DisconnectMongo() {
 	}
 }
 
-// func GetCollection(collectionName string) (*mongo.Collection, error) {
-// 	MONGO_URI := os.Getenv("MONGO_URI")
-// 	if MONGO_URI == "" {
-// 		MONGO_URI := "mongodb+srv://Kaveen:qX10lodLpHHEDFLg@cluster1.i6vai.mongodb.net/cloud-martini"
-// 	}
-// 	MONGO_DB := os.Getenv("MONGO_DB")
-// 	if MONGO_DB == "" {
-// 		MONGO_DB := "cloud-martini"
-// 	}
-// 	fmt.Println(MONGO_DB, collectionName)
+func GetCollection(collectionName string) *mongo.Collection {
+	MONGO_URI := "mongodb+srv://Kaveen:qX10lodLpHHEDFLg@cluster1.i6vai.mongodb.net/cloud-martini"
+	ConnectMongo(MONGO_URI)
 
-// 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(MONGO_URI))
-// 	if err != nil {
-// 		fmt.Printf("Error connecting to MongoDB: %v", err)
-// 	}
-// 	defer func() {
-// 		if err := client.Disconnect(context.TODO()); err != nil {
-// 			fmt.Printf("Error disconnecting MongoDB: %v", err)
-// 		}
-// 	}()
-// 	collection := client.Database(MONGO_DB).Collection(collectionName)
-// 	return collection, nil
-
-// }
+	var databaseName string = "cloud-martini"
+	if MongoClient == nil {
+		log.Fatalf("MongoClient is not initialized. Call ConnectMongo first.")
+	}
+	return MongoClient.Database(databaseName).Collection(collectionName)
+}

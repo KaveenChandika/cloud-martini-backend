@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"cloud-martini-backend/db"
 	"cloud-martini-backend/dto"
 	"cloud-martini-backend/queries"
 	"context"
@@ -21,24 +22,6 @@ func GetCollection(collectionName string) (*mongo.Collection, error) {
 	if err != nil {
 		panic(err)
 	}
-	MONGO_URI := os.Getenv("MONGO_URI")
-	MONGO_DB := os.Getenv("MONGO_DB")
-
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(MONGO_URI))
-	if err != nil {
-		fmt.Printf("Error connecting to MongoDB: %v", err)
-	}
-	go func() {
-		if err := client.Disconnect(context.TODO()); err != nil {
-			fmt.Printf("Error disconnecting MongoDB: %v", err)
-		}
-	}()
-	collection := client.Database(MONGO_DB).Collection(collectionName)
-	return collection, nil
-
-}
-
-func GetUsers(ctx *gin.Context, getUserFunc func(collection *mongo.Collection) ([]map[string]interface{}, error)) {
 	var MONGO_URI string = os.Getenv("MONGO_URI")
 	if MONGO_URI == "" {
 		MONGO_URI = "mongodb+srv://Kaveen:qX10lodLpHHEDFLg@cluster1.i6vai.mongodb.net/cloud-martini"
@@ -58,7 +41,12 @@ func GetUsers(ctx *gin.Context, getUserFunc func(collection *mongo.Collection) (
 		}
 	}()
 	collection := client.Database("cloud-martini").Collection(COLLECTION)
+	return collection, nil
 
+}
+
+func GetUsers(ctx *gin.Context, getUserFunc func(collection *mongo.Collection) ([]dto.Users, error)) {
+	collection := db.GetCollection("users")
 	users, err := queries.GetUsers(collection)
 	if err != nil {
 		log.Printf("Error fetching all users: %v", err)
@@ -76,26 +64,7 @@ func GetUsers(ctx *gin.Context, getUserFunc func(collection *mongo.Collection) (
 }
 
 func AddUsers(ctx *gin.Context, insertUserFunc func(collection *mongo.Collection, users dto.Users) (*mongo.InsertOneResult, error)) {
-	var MONGO_URI string = os.Getenv("MONGO_URI")
-	if MONGO_URI == "" {
-		MONGO_URI = "mongodb+srv://Kaveen:qX10lodLpHHEDFLg@cluster1.i6vai.mongodb.net/cloud-martini"
-	}
-	var MONGO_DB string = os.Getenv("MONGO_DB")
-	if MONGO_DB == "" {
-		MONGO_DB = "cloud-martini"
-	}
-	var COLLECTION string = "users"
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(MONGO_URI))
-	if err != nil {
-		fmt.Printf("Error connecting to MongoDB: %v", err)
-	}
-	defer func() {
-		if err := client.Disconnect(context.TODO()); err != nil {
-			fmt.Printf("Error disconnecting MongoDB: %v", err)
-		}
-	}()
-	collection := client.Database("cloud-martini").Collection(COLLECTION)
-
+	collection := db.GetCollection("users")
 	var users dto.Users
 	jsonError := ctx.ShouldBindBodyWithJSON(&users)
 	if jsonError != nil {
@@ -115,25 +84,7 @@ func AddUsers(ctx *gin.Context, insertUserFunc func(collection *mongo.Collection
 }
 
 func DeleteUsers(ctx *gin.Context, deleteUserFunc func(collection *mongo.Collection, objectID primitive.ObjectID) (*mongo.DeleteResult, error)) {
-	var MONGO_URI string = os.Getenv("MONGO_URI")
-	if MONGO_URI == "" {
-		MONGO_URI = "mongodb+srv://Kaveen:qX10lodLpHHEDFLg@cluster1.i6vai.mongodb.net/cloud-martini"
-	}
-	var MONGO_DB string = os.Getenv("MONGO_DB")
-	if MONGO_DB == "" {
-		MONGO_DB = "cloud-martini"
-	}
-	var COLLECTION string = "users"
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(MONGO_URI))
-	if err != nil {
-		fmt.Printf("Error connecting to MongoDB: %v", err)
-	}
-	defer func() {
-		if err := client.Disconnect(context.TODO()); err != nil {
-			fmt.Printf("Error disconnecting MongoDB: %v", err)
-		}
-	}()
-	collection := client.Database("cloud-martini").Collection(COLLECTION)
+	collection := db.GetCollection("users")
 
 	userId := ctx.Param("id")
 	objectID, err := primitive.ObjectIDFromHex(userId)
@@ -156,25 +107,7 @@ func DeleteUsers(ctx *gin.Context, deleteUserFunc func(collection *mongo.Collect
 }
 
 func UpdateUsers(ctx *gin.Context, updateUserFunc func(collection *mongo.Collection, objectID primitive.ObjectID, updateUsers dto.Users) (*mongo.UpdateResult, error)) {
-	var MONGO_URI string = os.Getenv("MONGO_URI")
-	if MONGO_URI == "" {
-		MONGO_URI = "mongodb+srv://Kaveen:qX10lodLpHHEDFLg@cluster1.i6vai.mongodb.net/cloud-martini"
-	}
-	var MONGO_DB string = os.Getenv("MONGO_DB")
-	if MONGO_DB == "" {
-		MONGO_DB = "cloud-martini"
-	}
-	var COLLECTION string = "users"
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(MONGO_URI))
-	if err != nil {
-		fmt.Printf("Error connecting to MongoDB: %v", err)
-	}
-	defer func() {
-		if err := client.Disconnect(context.TODO()); err != nil {
-			fmt.Printf("Error disconnecting MongoDB: %v", err)
-		}
-	}()
-	collection := client.Database("cloud-martini").Collection(COLLECTION)
+	collection := db.GetCollection("users")
 
 	userId := ctx.Param("id")
 	objectId, err := primitive.ObjectIDFromHex(userId)
