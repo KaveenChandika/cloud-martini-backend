@@ -8,7 +8,7 @@ spec:
     provider:
       job:
         metadata:
-          generateName: martini-agent-job- # "martini-agent-job-" will be prefixed, and a unique suffix will be added automatically
+          name: martini-agent-job
         spec:
           template:
             spec:
