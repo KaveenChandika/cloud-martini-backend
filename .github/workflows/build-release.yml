@@ -56,17 +56,6 @@ jobs:
         uses: azure/setup-helm@v1
         with:
           version: v3.5.4
-      
-      # - name: Install yq
-      #   run: |
-      #     sudo wget https://github.com/mikefarah/yq/releases/download/v4.13.4/yq_linux_amd64 -O /usr/bin/yq
-      #     sudo chmod +x /usr/bin/yq
-
-      # - name: Update Chart Version
-      #   run: |
-      #     CHART_VERSION=$(yq e '.version' ./k8s/Chart.yaml)
-      #     NEW_CHART_VERSION=$(echo $CHART_VERSION | awk -F. -v OFS=. '{$NF += 1 ; print}')
-      #     yq e -i ".version = \"$NEW_CHART_VERSION\"" ./k8s/Chart.yaml
 
       # Setup gcloud CLI
       - id: 'auth'
