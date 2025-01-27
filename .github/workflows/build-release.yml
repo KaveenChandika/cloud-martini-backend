@@ -82,7 +82,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build Martini Agent
     needs: [build, deploy]
-
+    
     env:
       REGISTRY_OWNER: chamodshehanka
       IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
@@ -100,10 +100,22 @@ jobs:
       - name: Log in to GitHub Container Registry
         run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
       - name: Build and push martini-agent Docker image
-        run: |
-          docker build -t ghcr.io/${{ env.REGISTRY_OWNER }}/martini-agent:${{ env.IMAGE_TAG }} -f martini-agent/Dockerfile .
-          docker push ghcr.io/${{ env.REGISTRY_OWNER }}/martini-agent:${{ env.IMAGE_TAG }}
+        uses: docker/build-push-action@v2
+        with:
+          context: ./martini-agent
+          push: true
+          tags: ghcr.io/${{ env.REGISTRY_OWNER }}/martini-agent:${{ env.IMAGE_TAG }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
   deploy-martini-agent:
     name: Deploy Martini Agent
     runs-on: ubuntu-latest
