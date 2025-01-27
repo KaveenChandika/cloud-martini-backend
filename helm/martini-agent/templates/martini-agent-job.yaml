@@ -10,4 +10,6 @@ spec:
         image: "{{ .Values.martiniAgent.image.repository }}:{{ .Values.martiniAgent.image.tag }}"
         imagePullPolicy: Always
       restartPolicy: Never
+      imagePullSecrets:
+      - name: {{ .Values.imagePullSecretName }}
   backoffLimit: 3
