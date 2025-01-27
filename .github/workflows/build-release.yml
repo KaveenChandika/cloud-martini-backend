@@ -23,9 +23,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Build docker image
-      - name: Image Build
-        run: docker build -t ghcr.io/${{ env.REGISTRY_OWNER }}/${{ env.SERVICE_NAME }}:${{ env.HASH }} .
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
       # Push docker image to GHCR
       - name: Log in to GitHub Container Registry
