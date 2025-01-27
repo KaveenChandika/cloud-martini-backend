@@ -14,6 +14,9 @@ spec:
       activeService: {{ .Chart.Name }}-active
       previewService: {{ .Chart.Name }}-preview
       autoPromotionEnabled: false # Set to true if you want automatic traffic switching
+      prePromotionAnalysis:
+        templates:
+        - templateName: martini-agent-job-analysis
   template:
     metadata:
       labels:
