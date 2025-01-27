@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: martini-agent-job
+  name: martini-agent-job-{{ .Values.martiniAgent.image.tag }}
 spec:
   template:
     spec:
