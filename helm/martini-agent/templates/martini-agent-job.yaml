@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: martini-agent-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: martini-agent
+        image: "{{ .Values.martiniAgent.image.repository }}:{{ .Values.martiniAgent.image.tag }}"
+        imagePullPolicy: Always
+      restartPolicy: Never
+  backoffLimit: 3
