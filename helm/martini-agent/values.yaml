@@ -1,0 +1,4 @@
+martiniAgent:
+  image:
+    repository: ghcr.io/chamodshehanka/martini-agent
+    tag: latest
