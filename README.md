@@ -7,8 +7,3 @@
  kubectl argo rollouts dashboard
 
 ```
-
-
-Hackthoon Sri Lanka
-
-
