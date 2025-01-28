@@ -5,6 +5,3 @@
 ```bash
 
  kubectl argo rollouts dashboard
-
-```
-Check
