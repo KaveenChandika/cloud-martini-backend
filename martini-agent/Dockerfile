@@ -8,10 +8,10 @@ RUN apk add --no-cache curl bash
 WORKDIR /app
 
 # Copy the agent.sh and smoke-test.sh scripts to the container
-COPY agent.sh smoke-test.sh ./
+COPY agent.sh smoke-test.sh /app/
 
 # Make the scripts executable
-RUN chmod +x agent.sh smoke-test.sh
+RUN chmod +x /app/agent.sh /app/smoke-test.sh
 
 # Run the agent.sh script
 CMD ["./agent.sh"]
