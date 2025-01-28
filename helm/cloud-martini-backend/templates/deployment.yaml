@@ -16,7 +16,7 @@ spec:
       autoPromotionEnabled: false # Set to true if you want automatic traffic switching
       prePromotionAnalysis:
         templates:
-        - templateName: martini-agent-job-analysis
+        - templateName: smoke-test-analysis
   template:
     metadata:
       labels:
