@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: martini-agent-job-analysis
+spec:
+  metrics:
+  - name: martini-agent-completion-check
+    provider:
+      job:
+        metadata:
+          name: martini-agent-job
+        spec:
+          template:
+            spec:
+              containers:
+              - name: martini-agent
+                image: "{{ .Values.martiniAgent.image.repository }}:{{ .Values.martiniAgent.image.tag }}"
+                imagePullPolicy: Always
+                volumeMounts:
+                - name: log-volume
+                  mountPath: /app/smoke-test.log
+              restartPolicy: Never
+              volumes:
+              - name: log-volume
+                emptyDir: {}
+              imagePullSecrets:
+              - name: {{ .Values.imagePullSecretName }}
+              backoffLimit: 3

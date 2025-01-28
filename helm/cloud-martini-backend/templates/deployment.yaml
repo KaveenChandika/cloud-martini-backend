@@ -13,7 +13,10 @@ spec:
     blueGreen:
       activeService: {{ .Chart.Name }}-active
       previewService: {{ .Chart.Name }}-preview
-      autoPromotionEnabled: false # Set to true if you want automatic traffic switching
+      autoPromotionEnabled: true # Set to true if you want automatic traffic switching
+      prePromotionAnalysis:
+        templates:
+        - templateName: smoke-test-analysis
   template:
     metadata:
       labels:

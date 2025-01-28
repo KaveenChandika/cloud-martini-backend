@@ -11,7 +11,7 @@ import (
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
 	router.Use(middleware.CORSMiddleware())
-	router.GET("/healthCheck", handler.HealthCheck)
+	router.GET("/health", handler.HealthCheck)
 	router.GET("/users", func(ctx *gin.Context) {
 		handler.GetUsers(ctx, queries.GetUsers)
 	})
