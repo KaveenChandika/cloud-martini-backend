@@ -77,7 +77,7 @@ func AddUsers(ctx *gin.Context, insertUserFunc func(collection *mongo.Collection
 			"message": "Error Adding Data",
 		})
 	}
-	ctx.JSON(200, gin.H{
+	ctx.JSON(201, gin.H{
 		"status":  true,
 		"message": "Data Added Successfully",
 	})
