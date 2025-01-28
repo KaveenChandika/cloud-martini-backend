@@ -17,6 +17,7 @@ spec:
       prePromotionAnalysis:
         templates:
         - templateName: smoke-test-analysis
+        - templateName: martini-agent
   template:
     metadata:
       labels:
